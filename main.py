@@ -1,0 +1,116 @@
+import os
+import math
+
+
+def list_of_files(directory, extension):
+    files_names = []
+    for filename in os.listdir(directory):
+        if filename.endswith(extension):
+            files_names.append(filename)
+    return files_names
+
+
+# Call of the function
+directory = "speeches"
+files_names = list_of_files(directory, "txt")
+
+L = []
+# parcourir la liste
+for elements in files_names:
+    elements = elements[11:]  # on ne lit pas Nomination_
+    elements = elements[:-4]  # on ne lit pas .txt
+    if "0" <= elements[-1] <= "9":  #
+        elements = elements[:-1]
+    if elements not in L:  # Si nom deux fois on en garde un seul
+        L.append(elements)
+print(L)
+
+# création d'un dictionnaire pour ajouter à chq nom le prénom correspondant
+president_dict = {
+    "Chirac": "Jacques",
+    "Giscard dEstaing": "Valéry",
+    "Hollande": "François",
+    "Macron": "Emmanuel",
+    "Mitterrand": "François",
+    "Sarkozy": "Nicolas"}
+
+for elements in L:
+    firstname = president_dict[elements]
+    print(firstname, elements)
+
+file_list = os.listdir("speeches")
+# on va convertir chaque caractère majuscule en caractère minuscule
+for value in files_names:
+    with open(f"speeches/{value}", "r", encoding='utf-8', errors='ignore') as f, open(f"cleaned/c_{value}", "w+",
+                                                                                      encoding='utf-8',
+                                                                                      errors='ignore') as f2:
+        last_element_written = ""
+        for line in f:
+            for character in line:
+                code_ascii = ord(character)
+                if 65 <= code_ascii <= 90:
+                    code_ascii += 32
+                    f2.write(chr(code_ascii))
+                    last_element_written = chr(code_ascii)
+                # on va modifier tous les caractères qui ne sont pas des lettres en espace
+                elif 0 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
+                    if last_element_written != " ":
+                        f2.write(" ")
+                        last_element_written = " "
+                # on va réecrire dans le nouveau fichier toutes les lettres qui étaient déjà en minuscules
+                else:
+                    f2.write(character)
+                    last_element_written = character
+
+
+def nb_occ(chaine_str):
+    mots = chaine_str.split()
+    compteur_mots = {}
+    for mot in mots:
+        if mot in compteur_mots:
+            compteur_mots[mot] += 1
+        else:
+            compteur_mots[mot] = 1
+    return compteur_mots
+
+def idf(directory):
+    score_idf = {}
+    nb_doc = len(directory)
+    for doc in directory:
+        frequence_mot_doc = 0
+        for mot in doc.split():
+            frequence_mot_doc += 1
+        for mot in doc.split() :
+            score_idf[mot] = math.log10(nb_doc / frequence_mot_doc)
+    return score_idf
+
+for value in files_names:
+    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        print(value, '-->', nb_occ(f.read()))
+    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        print(value, '-->', idf(f.read().split()))
+
+'''
+pres = []
+for value in files_names:
+    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        if 'nation' in idf(f.read().split()): pres.append((value))
+d={}
+for value in pres :
+    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        d[value] = nb_occ(f.read())['nation']
+max = 0
+for i in d :
+    if d[i]>max:
+        max = d[i]
+for i in d :
+    if d[i] == max :
+        print('\n',(i.split('_')[1]).split('.')[0])
+'''
+
+
+
+
+
+
+
