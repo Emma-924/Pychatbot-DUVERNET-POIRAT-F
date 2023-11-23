@@ -62,8 +62,7 @@ for value in files_names:
                     f2.write(character)
                     last_element_written = character
 
-
-def nb_occ(chaine_str):
+def tf(chaine_str):
     mots = chaine_str.split()
     compteur_mots = {}
     for mot in mots:
@@ -74,21 +73,26 @@ def nb_occ(chaine_str):
     return compteur_mots
 
 def idf(directory):
-    score_idf = {}
+    termes = {}
     nb_doc = len(directory)
-    for doc in directory:
-        frequence_mot_doc = 0
-        for mot in doc.split():
-            frequence_mot_doc += 1
-        for mot in doc.split() :
-            score_idf[mot] = math.log10(nb_doc / frequence_mot_doc)
+    for value in directory:
+        with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+            mots = set(f.read().split())
+
+        for mot in mots:
+            if mot in termes:
+                termes[mot] += 1
+            else:
+                termes[mot] = 1
+    score_idf = {}
+    for mot in termes :
+        score_idf[mot] = math.log10(nb_doc / termes[mot])
     return score_idf
 
 for value in files_names:
-    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-        print(value, '-->', nb_occ(f.read()))
-    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-        print(value, '-->', idf(f.read().split()))
+    with open(f"cleaned/c_{value}", "r") as f:
+        print(value, '-->', tf(f.read()))
+print((idf(files_names)))
 
 '''
 pres = []
