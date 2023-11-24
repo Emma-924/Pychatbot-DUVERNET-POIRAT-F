@@ -61,15 +61,17 @@ for value in files_names:
                 else:
                     f2.write(character)
                     last_element_written = character
-
-def tf(chaine_str):
-    mots = chaine_str.split()
+def tf(f):
+    contenu = f.read()
+    mots = contenu.split()
     compteur_mots = {}
+
     for mot in mots:
         if mot in compteur_mots:
             compteur_mots[mot] += 1
         else:
             compteur_mots[mot] = 1
+
     return compteur_mots
 
 def idf(directory):
@@ -90,8 +92,9 @@ def idf(directory):
     return score_idf
 
 for value in files_names:
-    with open(f"cleaned/c_{value}", "r") as f:
-        print(value, '-->', tf(f.read()))
+    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        res = tf(f)
+        print(res)
 print((idf(files_names)))
 
 
@@ -109,31 +112,58 @@ def tfidf(directory):
                 idf= idf[element]#on fait pareil avec le idf
                 tfidf_dict[element]=tf*idf #on multiplie le tf et le idf de chaque élément
             tfidfmat.append(tfidf_dict) #on ajoute le score dans la matrice
-    return tfidfmat #permet de retourner la matrice l'orsqu'on appelle la fonction
+    return tfidfmat #permet de retourner la matrice lorsque l'on appelle la fonction
 print(tfidf('cleaned')) # affiche la matrice tfidf
 
 
 
 '''
+# mot le plus répété par le président chirac
+
+with open(f"cleaned/c_Nomination_Chirac1.txt", "r", encoding='utf-8', errors='ignore') as f:
+    d1=tf(f)
+with open(f"cleaned/c_Nomination_Chirac2.txt", "r", encoding='utf-8', errors='ignore') as f:
+    d2=tf(f)
+d=d1
+for i in d2:
+    if i not in d :
+        d[i] = d2[i]
+    else :
+        d[i] = d[i] + d2[i]
+print(d)
+L=[]
+for i in d.items() :
+    L.append(i[1])
+maxi = max(L)
+for i in d :
+    if d[i] == maxi:
+        print(i)
+
+
+# présidents qui parlent de la nation
 pres = []
 for value in files_names:
     with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-        if 'nation' in idf(f.read().split()): pres.append((value))
+        if 'nation' in tf(f): pres.append(value)
+
+for i in pres :
+    print((i.split('.')[0]).split('_')[1], end=' ')
+
 d={}
 for value in pres :
     with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-        d[value] = nb_occ(f.read())['nation']
+        d1 = tf(f)
+        d[value] = d1['nation']
+
+# président qui en parle le plus
 max = 0
 for i in d :
     if d[i]>max:
         max = d[i]
 for i in d :
     if d[i] == max :
-        print('\n',(i.split('_')[1]).split('.')[0])
-'''
-
-
-
+        print('\n')
+        print((i.split('_')[1]).split('.')[0])'''
 
 
 
