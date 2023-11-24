@@ -94,6 +94,26 @@ for value in files_names:
         print(value, '-->', tf(f.read()))
 print((idf(files_names)))
 
+
+def tfidf(directory):
+    tfidfmat=[] # on a initialisé la matrice
+    S=idf(directory) #on récupère le score idf
+    L=os.listdir(directory) #on remplit une liste avec le nom des documents
+    #on crée une boucle qui parcours chaque élement de la liste
+    for element in L:
+        with open(f"cleaned/{element}", "r") as f: #on ouvre chaque fichier
+            tfscore=tf(f) #on récupère le score tf de chaque fichier
+            tfidf_dict={}
+            for element in tfscore: #boucle qui parcours chaque élement de la matrice tf
+                tf= tf[element] #on met dans une variable le score tf de  l'élement
+                idf= idf[element]#on fait pareil avec le idf
+                tfidf_dict[element]=tf*idf #on multiplie le tf et le idf de chaque élément
+            tfidfmat.append(tfidf_dict) #on ajoute le score dans la matrice
+    return tfidfmat #permet de retourner la matrice l'orsqu'on appelle la fonction
+print(tfidf('cleaned')) # affiche la matrice tfidf
+
+
+
 '''
 pres = []
 for value in files_names:
