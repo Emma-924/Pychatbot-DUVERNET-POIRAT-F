@@ -24,46 +24,37 @@ def tf(f):
     return compteur_mots
 
 def idf(directory):
-    termes = {}
-    nb_doc = len(directory)
-    for value in directory:
-        with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-            mots = set(f.read().split())
-
-        for mot in mots:
-            if mot in termes:
-                termes[mot] += 1
+    term_count = {}
+    total_documents = len(directory)
+    for file_name in directory:
+        with open(os.path.join("cleaned", file_name), "r", encoding='utf-8') as file:
+            terms = set(file.read().split())
+        for term in terms:
+            if term in term_count:
+                term_count[term] += 1
             else:
-                termes[mot] = 1
-    score_idf = {}
-    for mot in termes :
-        score_idf[mot] = math.log10((nb_doc / termes[mot]))
-    return score_idf
+                term_count[term] = 1
+    idf_scores = {}
+    for term, count in term_count.items():
+        idf_scores[term] = math.log(total_documents / count)
+    return idf_scores
 
-'''def tfidf(directory):
-    tfidfmat=[] # on a initialisé la matrice
-    S=idf(directory) #on récupère le score idf
-    L=os.listdir(directory) #on remplit une liste avec le nom des documents
-    #on crée une boucle qui parcours chaque élement de la liste
-    for element in L:
-        with open(f"cleaned/{element}", "r") as f: #on ouvre chaque fichier
-            tfscore=tf(f) #on récupère le score tf de chaque fichier
-            tfidf_dict={}
-            for element in tfscore: #boucle qui parcours chaque élement de la matrice tf
-                tf= tf[element] #on met dans une variable le score tf de  l'élement
-                idf= idf[element]#on fait pareil avec le idf
-                tfidf_dict[element]=tf*idf #on multiplie le tf et le idf de chaque élément
-            tfidfmat.append(tfidf_dict) #on ajoute le score dans la matrice
-    return tfidfmat #permet de retourner la matrice lorsque l'on appelle la fonction
-print(tfidf('cleaned')) # affiche la matrice tfidf'''
-
-
-
+def tfidf(directory):
+    cleaned_directory = os.path.join(os.getcwd(), "cleaned")
+    files = list_of_files(cleaned_directory, ".txt")
+    idf_scores = idf(files)
+    tfidf_matrix = []
+    for file_name in files:
+        file_path = os.path.join(cleaned_directory, file_name)
+        tf_scores = tf(file_path)
+        tfidf_dict = {term: tf * idf_scores[term] for term, tf in tf_scores.items()}
+        tfidf_matrix.append(tfidf_dict)
+    return tfidf_matrix
 
 def mots_chirac():
-    with open(f"cleaned/c_Nomination_Chirac1.txt", "r", encoding='utf-8', errors='ignore') as f:
+    with open(f"cleaned/Nomination_Chirac1.txt", "r", encoding='utf-8', errors='ignore') as f:
         d1=tf(f)
-    with open(f"cleaned/c_Nomination_Chirac2.txt", "r", encoding='utf-8', errors='ignore') as f:
+    with open(f"cleaned/Nomination_Chirac2.txt", "r", encoding='utf-8', errors='ignore') as f:
         d2=tf(f)
     d=d1
     for i in d2:
@@ -82,7 +73,7 @@ def mots_chirac():
 def mots_non_importants():
     mots_doc = set()
     for value in files_names:
-        with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        with open(f"cleaned/{value}", "r", encoding='utf-8', errors='ignore') as f:
             mot = f.read().split()
             for mots in mot:
                 mots_doc.add(mots)
@@ -96,11 +87,15 @@ def mots_non_importants():
 def pres_nation():
     L = []
     for value in files_names:
-        with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
+        with open(f"cleaned/{value}", "r", encoding='utf-8', errors='ignore') as f:
             if 'nation' in tf(f): L.append(value)
     pres = []
     for i in L:
-        pres.append((i.split('.')[0]).split('_')[1])
+        '''a = i.split('.')[0].split('_')[1]
+        if '1' in a or '2' in a:
+            a = a[:-1]
+        if a not in pres : pres.append(a)'''
+        pres.append(i.split('.')[0].split('_')[1])
     return pres
 
 
@@ -108,7 +103,7 @@ def pres_nation_max():
     d = {}
     pres = pres_nation()
     for value in pres:
-        with open(f"cleaned/c_Nomination_{value}.txt", "r", encoding='utf-8', errors='ignore') as f:
+        with open(f"cleaned/Nomination_{value}.txt", "r", encoding='utf-8', errors='ignore') as f:
             d1 = tf(f)
             d[value] = d1['nation']
 
@@ -119,4 +114,6 @@ def pres_nation_max():
             max = d[i]
     for i in d:
         if d[i] == max:
-            return i
+            if '1' in i or '2' in i :
+                return i[:-1]
+
