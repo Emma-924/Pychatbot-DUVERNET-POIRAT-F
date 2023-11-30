@@ -31,7 +31,7 @@ for elements in L:
 file_list = os.listdir("speeches")
 # on va convertir chaque caractère majuscule en caractère minuscule
 for value in files_names:
-    with open(f"speeches/{value}", "r", encoding='utf-8', errors='ignore') as f, open(f"cleaned/c_{value}", "w+",
+    with open(f"speeches/{value}", "r", encoding='utf-8', errors='ignore') as f, open(f"cleaned/{value}", "w+",
                                                                                       encoding='utf-8',
                                                                                       errors='ignore') as f2:
         last_element_written = ""
@@ -53,28 +53,22 @@ for value in files_names:
                     last_element_written = character
 
 
-
-
-for value in files_names:
-    with open(f"cleaned/c_{value}", "r", encoding='utf-8', errors='ignore') as f:
-        #print(tf(f))
-        pass
-#print(idf(files_names))
-
-
-question = int(input('Saisir le numéro de la qustion : '))
+question = int(input('Saisir le numéro de la question : '))
 
 if question == 1 :
     print('Les mots les moins importants sont',mots_non_importants())
 elif question == 2 :
-    pass
+    print('Le mot avec le score tf-df le plus élevé est',score_tfidf_max())
 elif question == 3 :
     print('Le mot le plus répété par le président Jacques Chirac est',mots_chirac())
 elif question == 4 :
-    print('Les présidents qui ont parlé de la nation sont',pres_nation())
-    print('Le président qui en a le plus parlé est',pres_nation_max())
-
-
+    print('Les présidents qui ont parlé de la nation sont ',end = '')
+    for i in pres_nation() :
+        if i != pres_nation()[-1] : print(i, end=', ')
+        else: print('et', i)
+    print('Le président qui en a le plus parlé est',president_dict[pres_nation_max()], pres_nation_max())
+elif question == 5 :
+    print('Le premier président à avoir parlé du climat est',president_dict[pres_climat()], pres_climat())
 
 
 
