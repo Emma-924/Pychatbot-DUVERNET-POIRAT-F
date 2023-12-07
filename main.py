@@ -1,6 +1,6 @@
 import os
 import math
-from Fonctions import *
+from fonctions import *
 import time
 
 # Call of the function
