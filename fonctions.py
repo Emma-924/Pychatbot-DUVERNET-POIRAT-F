@@ -154,14 +154,6 @@ def mots_communs():
     mots_communs1 = set([i for i in mots1 if mots1.count(i) == len(mandat_double) / 2 and idf(files_names)[i] != 0])
     mots_communs2 = set([i for i in mots2 if mots2.count(i) == len(mandat_unique) and idf(files_names)[i] != 0 ])
 
-    '''L = ['mandat', 'où', 'aussi', 'président', 'femmes', 'démocratie','valeurs','action','temps','mai', 'nos', 'jour', 'bien', 'politique', 'me', 'même', 'comme', 'justice', 'vive', 'toujours', 'chaque','c','moi','chacun','au','sur','autres']
-    for i in L :
-        for value in files_names:
-            with open(f"cleaned/{value}", "r", encoding='utf-8') as f:
-                if i not in f.read() :
-                    if value != 'Nomination_Chirac1.txt' and value != 'Nomination_Chirac2.txt' and value != 'Nomination_Mitterrand1.txt' and value != 'Nomination_Mitterrand2.txt':
-                        print(i, value)'''
-
     print('\n')
     for i in mots_communs1:
         if i in mots_communs2:
@@ -169,24 +161,6 @@ def mots_communs():
             time.sleep(0.1)
     print('\n')
 
-def tok(q):
-    a = ""
-    L = q.split()
-    print(L)
-    for mots in L :
-        i = 0
-        for lettre in mots :
-            code_ascii = ord(lettre)
-            if 65 <= code_ascii <= 90 :
-                code_ascii += 32
-                a += chr(code_ascii)
-            elif 0 <= code_ascii <= 47 or 58 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
-                    a += " "
-            else :
-                a += mots[i]
-            i += 1
-        if a[-1] != ' ' : a += ' '
-    return a
 def corpus_et_question (q):
     mots_quest = q.split()
     L = []
