@@ -1,5 +1,6 @@
 import math
 import os
+import time
 
 president_dict = {
     "Chirac": "Jacques",
@@ -20,7 +21,6 @@ directory = "speeches"
 files_names = list_of_files(directory, "txt")
 def tf(file_path):
     with open(file_path, "r", encoding='utf-8') as file:
-        #print("=$$$$=", file_path)
         words = file.read().split()
         word_count = {}
         for word in words:
@@ -85,11 +85,15 @@ def mots_non_importants():
         with open(f"cleaned/{value}", "r", encoding='utf-8', errors='ignore') as f:
             mot = f.read().split()
             for mots in mot : mots_doc.add(mots)
-    m_non_importants = []
+    print('\n')
+    nb_char = 0
     for mot in mots_doc:
-        if idf(files_names)[mot] == 0: m_non_importants.append(mot)
-    return m_non_importants
-
+        if idf(files_names)[mot] == 0:
+            print('«',mot,'»', end=', ')
+            time.sleep(0.1)
+            nb_char += len(mot)+6 # +6 en comptant les 2 guillemts, la virgule, les 2 esapaces entre les guillemets et le mot et l'espace après la virgule
+        if nb_char >= 85 : print() ; nb_char = 0 # si le nombre de charactère sur une ligne dépasse 85, on revient à ligne
+    print('\n')
 
 files_list = list_of_files('cleaned', "txt")
 
@@ -116,17 +120,58 @@ def pres_nation_max():
     pres = pres_nation()
     for file in files_list:
         d1 = tf(f'cleaned/{file}')
-        d[file]=0
         if 'nation' in d1:
             d[file] = d1['nation']
     max = 0
     for i in d:
         if d[i] > max: max = d[i]
     for i in d:
-        if d[i] == max:
+        if d[i] == max :
             if '1' in i or '2' in i : return (i.split('.')[0].split('_')[1])[:-1]
             else : return i.split('.')[0].split('_')[1]
-
+ordre = ['Nomination_Giscard dEstaing.txt','Nomination_Mitterrand1.txt','Nomination_Mitterrand2.txt','Nomination_Chirac1.txt','Nomination_Chirac2.txt','Nomination_Sarkozy.txt','Nomination_Hollande.txt','Nomination_Macron.txt']
 def pres_climat():
-    for file in files_list:
+    for file in ordre:
         if 'climat' in tf(f'cleaned/{file}') or 'écologie' in tf(f'cleaned/{file}'): return file.split('.')[0].split('_')[1]
+
+def affichage_chaine(chaine):
+    chaine = chaine.split()
+    nb_char = 0
+    for i in chaine:
+        print(i, end=' ')
+        nb_char += len(i)+1
+        if nb_char >= 85 : nb_char = 0 ; print()
+        time.sleep(0.1)
+
+def mots_communs():
+
+    mandat_double = [i for i in files_names if '1' in i or '2' in i ]
+    mandat_unique = [i for i in files_names if '1' not in i and '2' not in i]
+
+    mots1 = [mot for value in mandat_double for mot in set(open(f"cleaned/{value}", "r", encoding='utf-8').read().split())]
+    mots2 = [mot for value in mandat_unique for mot in set(open(f"cleaned/{value}", "r", encoding='utf-8').read().split())]
+
+    mots_communs1 = set([i for i in mots1 if mots1.count(i) == len(mandat_double) / 2 and idf(files_names)[i] != 0])
+    mots_communs2 = set([i for i in mots2 if mots2.count(i) == len(mandat_unique) and idf(files_names)[i] != 0 ])
+
+    print('\n')
+    for i in mots_communs1:
+        if i in mots_communs2:
+            print('«',i,'»', end = ', ')
+            time.sleep(0.1)
+    print('\n')
+
+
+def corpus_et_question (question):
+    mots_quest = question.split()
+    for i in mots_quest :
+        if i in tfidf('cleaned') :
+            print(i)
+
+def idf_question(chaine):
+    mots = chaine.split()
+    d = {}
+    for i in mots :
+        if i in d : d[i]+=1
+        else : d[i]=1
+    return d
