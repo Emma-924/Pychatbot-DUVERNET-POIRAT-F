@@ -19,15 +19,19 @@ def list_of_files(directory, extension):
     return files_names
 directory = "speeches"
 files_names = list_of_files(directory, "txt")
-def tf(file_path):
-    with open(file_path, "r", encoding='utf-8') as file:
-        words = file.read().split()
-        word_count = {}
-        for word in words:
-            if word in word_count:
-                word_count[word] += 1
-            else:
-                word_count[word] = 1
+
+def tf(file_path = None, chaine = None):
+    if file_path != None :
+        with open(file_path, "r", encoding='utf-8') as file:
+            words = file.read().split()
+    if chaine != None :
+        words = chaine.split()
+    word_count = {}
+    for word in words:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
     return word_count
 
 def idf(directory):
@@ -53,6 +57,7 @@ def tfidf(directory):
     tfidf_matrix = []
     for file_name in files:
         file_path = os.path.join(cleaned_directory, file_name)
+        file_path = os.path.join(cleaned_directory, file_name)
         tf_scores = tf(file_path)
         tfidf_dict = {term: tf * idf_scores[term] for term, tf in tf_scores.items()}
         tfidf_matrix.append(tfidf_dict)
@@ -70,14 +75,14 @@ def mots_chirac():
     for i in d1 :
         if d1[i] == maxi : return i
 
-def score_tfidf_max():
+def score_tfidf_max(matrice):
     L = []
-    for i in range(len(tfidf("cleaned"))):
-        for j in tfidf("cleaned")[i].items() : L.append(j[1])
+    for i in range(len(matrice)):
+        for j in matrice[i].items() : L.append(j[1])
     maxi = max(L)
-    for i in range(len(tfidf("cleaned"))):
-        for j in tfidf("cleaned")[i] :
-            if tfidf("cleaned")[i][j]== maxi : return j
+    for i in range(len(matrice)):
+        for j in matrice[i] :
+            if matrice[i][j]== maxi : return j
 
 def mots_non_importants():
     mots_doc = set()
@@ -164,7 +169,6 @@ def mots_communs():
 def tok(q):
     a = ""
     L = q.split()
-    print(L)
     for mots in L :
         i = 0
         for lettre in mots :
@@ -179,7 +183,6 @@ def tok(q):
             i += 1
         if a[-1] != ' ' : a += ' '
     return a
-
 def corpus_et_question (q):
     mots_quest = q.split()
     L = []
@@ -187,14 +190,6 @@ def corpus_et_question (q):
         for file in files_list:
             if i in tf(f'cleaned/{file}'): L.append(i)
     print(set(L))
-
-def idf_question(chaine):
-    mots = chaine.split()
-    d = {}
-    for i in mots :
-        if i in d : d[i]+=1
-        else : d[i]=1
-    return d
 
 def produit_scalaire(v1,v2):
     assert len(v1)==len(v2)
@@ -209,6 +204,6 @@ def norme_vecteur(v1):
     for i in v1 : somme += i
     return math.sqrt(somme)
 
-
 def similarié(v1,v2) :
     return produit_scalaire(v1,v2)/(norme_vecteur(v1)*norme_vecteur(v2))
+
