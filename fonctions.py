@@ -207,3 +207,15 @@ def norme_vecteur(v1):
 def similarié(v1,v2) :
     return produit_scalaire(v1,v2)/(norme_vecteur(v1)*norme_vecteur(v2))
 
+
+def affiner(q):
+    question_starters = {
+        "Comment": "Après analyse, ",
+        "Pourquoi": "Il semblerait que, ",
+        "Peux-tu": "Oui, bien sûr !",
+        "Explique-moi": "Très bien, "}
+    question = q.split()
+    for i in question_starters :
+        if question[0] == i :
+            return question_starters[i]
+
