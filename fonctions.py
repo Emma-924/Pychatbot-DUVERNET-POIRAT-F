@@ -161,6 +161,25 @@ def mots_communs():
             time.sleep(0.1)
     print('\n')
 
+def tok(q):
+    a = ""
+    L = q.split()
+    print(L)
+    for mots in L :
+        i = 0
+        for lettre in mots :
+            code_ascii = ord(lettre)
+            if 65 <= code_ascii <= 90 :
+                code_ascii += 32
+                a += chr(code_ascii)
+            elif 0 <= code_ascii <= 47 or 58 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
+                    a += " "
+            else :
+                a += mots[i]
+            i += 1
+        if a[-1] != ' ' : a += ' '
+    return a
+
 def corpus_et_question (q):
     mots_quest = q.split()
     L = []
@@ -168,6 +187,7 @@ def corpus_et_question (q):
         for file in files_list:
             if i in tf(f'cleaned/{file}'): L.append(i)
     print(set(L))
+
 def idf_question(chaine):
     mots = chaine.split()
     d = {}
@@ -175,3 +195,20 @@ def idf_question(chaine):
         if i in d : d[i]+=1
         else : d[i]=1
     return d
+
+def produit_scalaire(v1,v2):
+    assert len(v1)==len(v2)
+    p_scalaire = 0
+    for i in range(len(v1)) :  p_scalaire += v1[i]*v2[i]
+    return p_scalaire
+
+def norme_vecteur(v1):
+    for i in range(len(v1)) :
+        v1[i] = v1[i]**2
+    somme = 0
+    for i in v1 : somme += i
+    return math.sqrt(somme)
+
+
+def similarié(v1,v2) :
+    return produit_scalaire(v1,v2)/(norme_vecteur(v1)*norme_vecteur(v2))
