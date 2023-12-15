@@ -53,21 +53,36 @@ for value in files_names:
                     f2.write(character)
                     last_element_written = character
 
-print('\nBienvenue ')
+
+print('\n------------------------------------------ Bienvenue ------------------------------------------ ')
 choix = ''
-question = int(input("Veuillez saisir le numéro d'une question pour commencer : "))
+print('1- Connaitre la liste des mots les moins importants')
+time.sleep(0.4)
+print('2- Connaitre le mot avec le score tf-idf le plus élevé')
+time.sleep(0.4)
+print('3- Connaitre le mot le plus répété par le président Chirac')
+time.sleep(0.4)
+print('4- Connaitre la liste des présidents qui ont parlé de la nation et savoir qui en a le plus parlé')
+time.sleep(0.4)
+print('5- Connaitre le nom du premier président à avoir palé du climat')
+time.sleep(0.4)
+print('6- Connaitre la liste des mots cités par tous les présidents')
+time.sleep(0.4)
+print('')
+question = input(" --------- Pour accéder au menu des questions,veuillez saisir le numéro d'une question --------- "
+                 "\n------------------- Pour accéder au Chatbot, veuillez saisir votre question -------------------\n")
 
 while True:
-    if question == 1 :
+    if question == '1' :
         affichage_chaine('Les mots les moins importants sont')
         mots_non_importants()
-    elif question == 2 :
+    elif question == '2' :
         affichage_chaine('Le mot avec le score tf-df le plus élevé est')
-        print('«', score_tfidf_max(),'»')
-    elif question == 3 :
+        print('«', score_tfidf_max(tfidf("cleaned")),'»')
+    elif question == '3' :
         affichage_chaine('Le mot le plus répété par le président Jacques Chirac est')
-        print( '«',mots_chirac(),'»')
-    elif question == 4 :
+        print('«',mots_chirac(),'»')
+    elif question == '4' :
         affichage_chaine ('Les présidents qui ont parlé de la nation sont ')
         for i in pres_nation() :
             if i != pres_nation()[-1] :
@@ -79,17 +94,21 @@ while True:
         print(president_dict[pres_nation_max()],end=' ')
         time.sleep(0.1)
         print(pres_nation_max())
-    elif question == 5 :
+    elif question == '5' :
         affichage_chaine('Le premier président à avoir parlé du climat est')
         print(president_dict[pres_climat()], end=' ')
         time.sleep(0.1)
         print(pres_climat())
-    elif question == 6 :
+    elif question == '6' :
         affichage_chaine('Les mots cités par tous les présidents et qui ne sont pas considérés comme non importants sont')
         mots_communs()
+    else :
+        q = question
+        génération(q)
     time.sleep(0.7)
-    choix = input("\n----------------------------- Tapez « exit » pour quitter le menu -----------------------------\n------------------- Pour continuer saisissez le numéro d'une autre question -------------------\n")
-    if choix == 'exit':
+    choix = input("\n----------------------------- Tapez « STOP » pour quitter le menu -----------------------------\n------------------------- Pour continuer saisissez une autre question -------------------------\n")
+    if choix == 'STOP':
         break
-    question=int(choix)
+    question = choix
+
 
