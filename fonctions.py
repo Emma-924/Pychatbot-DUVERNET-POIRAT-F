@@ -195,9 +195,23 @@ ordre = ['Nomination_Giscard dEstaing.txt', 'Nomination_Mitterrand1.txt', 'Nomin
 def pres_climat():
     ''' Entrée : None → Sortie : list
     Retorune le nom du premier président qui a parlé du climat'''
+    L = []
     for file in ordre:
-        if 'climat' in tf(f'cleaned/{file}') or 'écologie' in tf(f'cleaned/{file}'): return file.split('.')[0].split('_')[1]
+        with open(f"cleaned/{file}", "r", encoding='utf-8', errors='ignore') as f:
+            mots_doc = f.read().split()
+            for mot in mots_doc :
+                if 'climat' in mot or 'écologie' in mot :
+                    if '1' in file or '2' in file :  nom = file.split('.')[0].split('_')[1][:-1]
+                    else : nom = file.split('.')[0].split('_')[1]
+                    pres = president_dict[nom] + ' ' +  nom
+                    L.append(pres)
 
+    L = list(set(L))
+    for i in L :
+        if i == L[-2] : print(i,end=' et ')
+        elif i == L[-1] : print(i,end=' ')
+        else : print(i,end=', ')
+        time.sleep(0.1)
 
 def affichage_chaine(chaine):
     '''Entrée: str → Sortie: None
