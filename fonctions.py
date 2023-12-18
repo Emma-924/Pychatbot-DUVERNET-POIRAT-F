@@ -244,25 +244,6 @@ def mots_communs():
                     print(i, value)'''
 
 
-def tok(q):
-    a = ""
-    L = q.split()
-    for mots in L:
-        i = 0
-        for lettre in mots:
-            code_ascii = ord(lettre)
-            if 65 <= code_ascii <= 90:
-                code_ascii += 32
-                a += chr(code_ascii)
-            elif 0 <= code_ascii <= 47 or 58 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
-                a += " "
-            else:
-                a += mots[i]
-            i += 1
-        if a[-1] != ' ': a += ' '
-    return a
-
-
 def corpus_et_question(q):
     '''Entrée: str → Sortie: list
     Affiche les mots présents dans q et dans le corpus'''
