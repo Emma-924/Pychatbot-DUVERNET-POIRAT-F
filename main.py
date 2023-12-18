@@ -54,23 +54,23 @@ for value in files_names:
                     last_element_written = character
 
 
-print('\n------------------------------------------ Bienvenue ------------------------------------------ ')
+print('\n\033[1;95;49m                    ------------------------------------------- Bienvenue ------------------------------------------- ')
 choix = ''
-print('1- Connaitre la liste des mots les moins importants')
+print('\n\033[0;38;49m                     1- Connaitre la liste des mots les moins importants')
 time.sleep(0.4)
-print('2- Connaitre le mot avec le score tf-idf le plus élevé')
+print('                     2- Connaitre le mot avec le score tf-idf le plus élevé')
 time.sleep(0.4)
-print('3- Connaitre le mot le plus répété par le président Chirac')
+print('                     3- Connaitre le mot le plus répété par le président Chirac')
 time.sleep(0.4)
-print('4- Connaitre la liste des présidents qui ont parlé de la nation et savoir qui en a le plus parlé')
+print('                     4- Connaitre la liste des présidents qui ont parlé de la nation et celui qui en a le plus parlé')
 time.sleep(0.4)
-print('5- Connaitre le nom du premier président à avoir palé du climat')
+print('                     5- Connaitre les noms des présidents à avoir palé du climat')
 time.sleep(0.4)
-print('6- Connaitre la liste des mots cités par tous les présidents')
+print('                     6- Connaitre la liste des mots cités par tous les présidents')
 time.sleep(0.4)
 print('')
-question = input(" --------- Pour accéder au menu des questions,veuillez saisir le numéro d'une question --------- "
-                 "\n------------------- Pour accéder au Chatbot, veuillez saisir votre question -------------------\n")
+question = input("\033[0;95;49m                    ---------- Pour accéder au menu des questions,veuillez saisir le numéro d'une question ---------- "
+                 "\n                    -------------------- Pour accéder au Chatbot, veuillez saisir votre question --------------------\n                     \33[0m")
 
 while True:
     if question == '1' :
@@ -88,27 +88,32 @@ while True:
             if i != pres_nation()[-1] :
                 print(i, end=', ')
                 time.sleep(0.1)
-            else: print('et', i)
+            else: print('\n                     et', i)
         time.sleep(0.1)
         affichage_chaine('Le président qui en a le plus parlé est ')
         print(president_dict[pres_nation_max()],end=' ')
         time.sleep(0.1)
         print(pres_nation_max())
     elif question == '5' :
-        affichage_chaine('Le premier président à avoir parlé du climat est')
-        print(president_dict[pres_climat()], end=' ')
+        affichage_chaine('Les présidents à avoir parlé du climat sont')
+        pres_climat()
         time.sleep(0.1)
-        print(pres_climat())
     elif question == '6' :
         affichage_chaine('Les mots cités par tous les présidents et qui ne sont pas considérés comme non importants sont')
         mots_communs()
     else :
         q = question
-        génération(q)
+        print('                      Fonctionnalité en cours de développement ')
     time.sleep(0.7)
-    choix = input("\n----------------------------- Tapez « STOP » pour quitter le menu -----------------------------\n------------------------- Pour continuer saisissez une autre question -------------------------\n")
+    choix = input("\033[0;37;49m\n                    ------------------------------- Tapez « STOP » pour quitter le menu -------------------------------\033[0;37;49m\n                    --------------------------- Pour continuer saisissez une autre question ---------------------------\n                     \33[0m")
     if choix == 'STOP':
         break
     question = choix
+
+
+
+
+
+
 
 
