@@ -124,19 +124,18 @@ def score_tfidf_max(matrice):
 def mots_non_importants():
     '''Entrée : None → Sortie : None
     Affiche les mots qui ont un idf nul, càd qui ont un score tfidf nul dans tous les docs'''
-
     mots_doc = set()
-    for value in files_names: # ajoute tous les mots du corpus
+    for value in files_names:
         with open(f"cleaned/{value}", "r", encoding='utf-8', errors='ignore') as f:
             mot = f.read().split()
             for mots in mot: mots_doc.add(mots)
-
     print('\n')
     nb_char = 0
     for mot in mots_doc:
-        if idf(files_names)[mot] == 0: # n'affiche que ceux qui ont un idf nul
+        if idf(files_names)[mot] == 0:
             if nb_char == 0 :
-                print('«', mot, '»', end=', ')
+                print('                     ',end='')
+            print('«', mot, '»', end=', ')
             time.sleep(0.1)
             nb_char += len(
                 mot) + 6  # +6 en comptant les 2 guillemts, la virgule, les 2 esapaces entre les guillemets et le mot et l'espace après la virgule
@@ -164,6 +163,8 @@ def pres_nation():
             for j in president_dict:
                 prénom = president_dict[nom]
                 pres.append(prénom + ' ' + nom)
+
+
     return list(set(pres))
 
 
@@ -172,13 +173,13 @@ def pres_nation_max():
 
     d = {}
     pres = pres_nation()
-    for file in files_list:
+    for file in files_list :
         d1 = tf(f'cleaned/{file}')
         if 'nation' in d1:
             d[file] = d1['nation']
     max = 0
     for i in d:
-        if d[i] > max: max = d[i] # on relève la plus grande clé de la liste
+        if d[i] > max: max = d[i] # on relève la plus grande clé du dictionnaire
     for i in d:
         if d[i] == max: # on relève le nom du président qui correspond à la valeur max trouvée
             if '1' in i or '2' in i:
@@ -187,16 +188,11 @@ def pres_nation_max():
                 return i.split('.')[0].split('_')[1]
 
 
-ordre = ['Nomination_Giscard dEstaing.txt', 'Nomination_Mitterrand1.txt', 'Nomination_Mitterrand2.txt',
-         'Nomination_Chirac1.txt', 'Nomination_Chirac2.txt', 'Nomination_Sarkozy.txt', 'Nomination_Hollande.txt',
-         'Nomination_Macron.txt']
-
-
 def pres_climat():
     ''' Entrée : None → Sortie : list
-    Retorune le nom du premier président qui a parlé du climat'''
+    Affiche le nom des présidents qui ont parlé du climat'''
     L = []
-    for file in ordre:
+    for file in files_names:
         with open(f"cleaned/{file}", "r", encoding='utf-8', errors='ignore') as f:
             mots_doc = f.read().split()
             for mot in mots_doc :
@@ -213,21 +209,24 @@ def pres_climat():
         else : print(i,end=', ')
         time.sleep(0.1)
 
+
 def affichage_chaine(chaine):
     '''Entrée: str → Sortie: None
     Affiche la chaine avec un temps d'attente entre chaque mot'''
     chaine = chaine.split()
     nb_char = 0
     for i in chaine:
+        if nb_char == 0 :
+            print('                     ', end='')
         print(i, end=' ')
         nb_char += len(i) + 1
-        if nb_char >= 90: nb_char = 0; print() # si le nombre de caractère sur une ligne dépasse 9à, on reviens à la ligne
+        if nb_char >= 90: nb_char = 0; print() # si le nombre de caractères sur une ligne dépasse 90, on revient à la ligne
         time.sleep(0.1)
 
 
 def mots_communs():
     '''Entrée: None → Sortie: None
-    Affiche les mots cité par tous les présidents'''
+    Affiche les mots cités par tous les présidents'''
 
     mandat_unique = [i for i in files_names if '1' not in i and '2' not in i]
     chirac = [i for i in files_names if 'Chirac' in i]
@@ -242,20 +241,36 @@ def mots_communs():
     mots_communs2 = list(set([i for i in mots2 if idf(files_names)[i] != 0])) # on ajoute que les mots importants
     mots_communs3 = list(set([i for i in mots3 if idf(files_names)[i] != 0])) # on ajoute que les mots importants
 
-    nb_char = 0
     print('\n')
-    for i in mots_communs1 :
-        if i in mots_communs2 and i in mots_communs3 : # on n'affiche que les mots présents dans les 3 documents
+    nb_char = 0
+    for i in mots_communs1:
+        if i in mots_communs2 and i in mots_communs3:
+            if nb_char == 0:
+                print('                     ', end='')
             print('«', i, '»', end=', ')
             nb_char += len(i) + 6
-            if nb_char >= 90 : print();nb_char =0
+            if nb_char >= 85: print();nb_char = 0
+            time.sleep(0.1)
 
-    '''L = ['sont', 'm', 'un', 'ont', 'leur', 'avec', 'mai', 'n', 'chacun', 's', 'cette', 'pas', 'lui', 'droits', 'politique', 'sont', 'avenir', 'confiance']
-    for value in files_names :
-        for i in L :
-            with open(f"cleaned/{value}", "r", encoding='utf-8') as f:
-                if i not in f.read():
-                    print(i, value)'''
+
+
+def tok(q):
+    a = ""
+    L = q.split()
+    for mots in L:
+        i = 0
+        for lettre in mots:
+            code_ascii = ord(lettre)
+            if 65 <= code_ascii <= 90:
+                code_ascii += 32
+                a += chr(code_ascii)
+            elif 0 <= code_ascii <= 47 or 58 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
+                a += " "
+            else:
+                a += mots[i]
+            i += 1
+        if a[-1] != ' ': a += ' '
+    return a
 
 
 def corpus_et_question(q):
@@ -318,7 +333,6 @@ def affiner(q):
             return question_starters[i]
 
 
-q=str(input("Posez moi une question ? "))
 def mots_question (q):
     letter_list=list(q)
     letter_list_cleaned=[]
@@ -346,4 +360,4 @@ def mots_question (q):
 
     L=q.split(" ")
     return j
-print(mots_question(q))
+
