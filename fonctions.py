@@ -322,3 +322,33 @@ def affiner(q):
         if question[0] == i :
             return question_starters[i]
 
+
+q=str(input("Posez moi une question ? "))
+def mots_question (q):
+    letter_list=list(q)
+    letter_list_cleaned=[]
+    last_element = ""
+    for element in letter_list:
+        #on convertit chq lettre majuscule en minuscule
+        if 65<=ord(element)<=90:
+            letter_list_cleaned.append(chr(ord(element)+32))
+            last_element=chr(ord(element)+32)
+        #on réecrit chq minuscule dans la liste clean
+        elif 97<=ord(element)<=122:
+            letter_list_cleaned.append(element)
+            last_element = element
+        #on convertit chq caractère spécial en espace
+        else:
+            #on vérifie qu'il n'y ai pas deux espaces à la suite
+            if last_element!=" ":
+                letter_list_cleaned.append(" ")
+                last_element = " "
+   #on chaque élément de la liste
+    j= "".join(letter_list_cleaned)
+   #on sépare la chaine de caractère à partir des espaces
+    j = j.split(" ")
+
+
+    L=q.split(" ")
+    return j
+print(mots_question(q))
