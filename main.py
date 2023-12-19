@@ -1,9 +1,8 @@
-import os
-import math
 from fonctions import *
 import time
+import os
+import math
 
-# Call of the function
 directory = "speeches"
 files_names = list_of_files(directory, "txt")
 
@@ -54,66 +53,75 @@ for value in files_names:
                     last_element_written = character
 
 
-print('\n\033[1;95;49m                    ------------------------------------------- Bienvenue ------------------------------------------- ')
+print('\n------------------------------------------ Bienvenue ------------------------------------------ ')
 choix = ''
-print('\n\033[0;38;49m                     1- Connaitre la liste des mots les moins importants')
+print('1- Connaitre la liste des mots les moins importants')
 time.sleep(0.4)
-print('                     2- Connaitre le mot avec le score tf-idf le plus élevé')
+print('2- Connaitre le mot avec le score tf-idf le plus élevé')
 time.sleep(0.4)
-print('                     3- Connaitre le mot le plus répété par le président Chirac')
+print('3- Connaitre le mot le plus répété par le président Chirac')
 time.sleep(0.4)
-print('                     4- Connaitre la liste des présidents qui ont parlé de la nation et celui qui en a le plus parlé')
+print('4- Connaitre la liste des présidents qui ont parlé de la nation et savoir qui en a le plus parlé')
 time.sleep(0.4)
-print('                     5- Connaitre les noms des présidents à avoir palé du climat')
+print('5- Connaitre le nom du premier président à avoir palé du climat')
 time.sleep(0.4)
-print('                     6- Connaitre la liste des mots cités par tous les présidents')
+print('6- Connaitre la liste des mots cités par tous les présidents')
 time.sleep(0.4)
 print('')
-question = input("\033[0;95;49m                    ---------- Pour accéder au menu des questions,veuillez saisir le numéro d'une question ---------- "
-                 "\n                    -------------------- Pour accéder au Chatbot, veuillez saisir votre question --------------------\n                     \33[0m")
+print(" --------- Pour accéder au menu des questions,veuillez saisir un numéro d'une question --------- "
+      "\n------------------- Pour accéder au Chatbot, veuillez saisir 7 -------------------")
 
-while True:
-    if question == '1' :
-        affichage_chaine('Les mots les moins importants sont')
-        mots_non_importants()
-    elif question == '2' :
-        affichage_chaine('Le mot avec le score tf-df le plus élevé est')
-        print('«', score_tfidf_max(tfidf("cleaned")),'»')
-    elif question == '3' :
-        affichage_chaine('Le mot le plus répété par le président Jacques Chirac est')
-        print('«',mots_chirac(),'»')
-    elif question == '4' :
-        affichage_chaine ('Les présidents qui ont parlé de la nation sont ')
-        for i in pres_nation() :
-            if i != pres_nation()[-1] :
-                print(i, end=', ')
-                time.sleep(0.1)
-            else: print('\n                     et', i)
-        time.sleep(0.1)
-        affichage_chaine('Le président qui en a le plus parlé est ')
-        print(president_dict[pres_nation_max()],end=' ')
-        time.sleep(0.1)
-        print(pres_nation_max())
-    elif question == '5' :
-        affichage_chaine('Les présidents à avoir parlé du climat sont')
-        pres_climat()
-        time.sleep(0.1)
-    elif question == '6' :
-        affichage_chaine('Les mots cités par tous les présidents et qui ne sont pas considérés comme non importants sont')
-        mots_communs()
-    else :
-        q = question
-        print('                      Fonctionnalité en cours de développement ')
-    time.sleep(0.7)
-    choix = input("\033[0;37;49m\n                    ------------------------------- Tapez « STOP » pour quitter le menu -------------------------------\033[0;37;49m\n                    --------------------------- Pour continuer saisissez une autre question ---------------------------\n                     \33[0m")
-    if choix == 'STOP':
-        break
-    question = choix
-
-
+number = int(input("Tapez : "))
+question = number
+if 1 <= number <= 6:
+    while True:
+        if question == '1' :
+            affichage_chaine('Les mots les moins importants sont')
+            mots_non_importants()
+        elif question == '2' :
+            affichage_chaine('Le mot avec le score tf-df le plus élevé est')
+            print('«', score_tfidf_max(tfidf("cleaned")),'»')
+        elif question == '3' :
+            affichage_chaine('Le mot le plus répété par le président Jacques Chirac est')
+            print('«',mots_chirac(),'»')
+        elif question == '4' :
+            affichage_chaine ('Les présidents qui ont parlé de la nation sont ')
+            for i in pres_nation() :
+                if i != pres_nation()[-1] :
+                    print(i, end=', ')
+                    time.sleep(0.1)
+                else: print('et', i)
+            time.sleep(0.1)
+            affichage_chaine('Le président qui en a le plus parlé est ')
+            print(president_dict[pres_nation_max()],end=' ')
+            time.sleep(0.1)
+            print(pres_nation_max())
+        elif question == '5' :
+            affichage_chaine('Le premier président à avoir parlé du climat est')
+            print(president_dict[pres_climat()], end=' ')
+            time.sleep(0.1)
+            print(pres_climat())
+        elif question == '6' :
+            affichage_chaine('Les mots cités par tous les présidents et qui ne sont pas considérés comme non importants sont')
+            mots_communs()
+        choix = input("\n----------------------------- Tapez « STOP » pour quitter le menu -----------------------------\n------------------------- Pour poser une question tapez son numéro -------------------------\n")
+        if choix == 'STOP':
+            break
+        question = choix
 
 
+if number == 7:
+    question = input("Posez votre question : ")
+    question_words = tokenize_question(question)
+    common_terms = intersection_terms(question_words, "cleaned")
+    idf_scores = idf_calculation("cleaned")
+    question_vector = tfidf_vector(question_words, idf_scores)
+    file_names = os.listdir("cleaned")
+    most_relevant_doc = most_relevant_document(question_vector, tfidf_matrix_result, file_names)
+    highest_tfidf_word = max(question_vector, key=question_vector.get)
+    response = generate_response(most_relevant_doc, highest_tfidf_word)
 
-
-
-
+    # Afficher la réponse
+    answer = response
+    if answer != None:
+        print(answer)
