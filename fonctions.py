@@ -1,4 +1,4 @@
-import math
+import time
 import os
 import time
 
@@ -23,6 +23,70 @@ def list_of_files(directory, extension):
 directory = "speeches"
 files_names = list_of_files(directory, "txt")
 
+
+def tf_calculation(f):
+    """
+    :param f:
+    :return: occurences
+    """
+    file_content = f.read()
+    words_list = file_content.split()   # Diviser le texte en mot à partir des espaces
+    occurrences = {}
+    for word in words_list:
+        if word in occurrences:
+            occurrences[word] += 1   # Si le mot est déjà dans le dictionnaire, ajouter 1 à sa valeur
+        else:
+            occurrences[word] = 1   # Si le mot n'est pas déjà dans le dictionnaire, l'ajouter et mettre sa valeur à 1
+    return occurrences
+
+def idf_calculation(corpus_dir):
+    """
+    :param corpus_dir:
+    :return: idf
+    """
+    word_count = {}
+    number_of_files = len(os.listdir(corpus_dir))   # Compter le nombre de fichiers
+    for file_name in os.listdir(corpus_dir):
+        with open(f"{corpus_dir}\\{file_name}", 'r') as f:
+            file_content = f.read()
+            words_list = file_content.split()   # Diviser le texte en mot à partir des espaces
+            unique_words = set(words_list)   # Eliminer les doublons en transformant la liste en set
+            for word in unique_words:
+                if word in word_count:
+                    word_count[word] += 1
+                else:
+                    word_count[word] = 1
+    idf = {}
+    words = list(word_count.keys())   # Faire une liste avec les clés du dictionnaire
+    counts = list(word_count.values())   # Faire une liste avec les valeurs du dictionnaire
+    for i in range(len(words)):
+        word = words[i]
+        count = counts[i]
+        idf[word] = math.log10(number_of_files / count)   # Calculer le score IDF et l'enregistrer dans un dictionnaire
+    return idf
+# calculer les scores TF-IDF
+def tfidf_matrix(corpus_dir):
+    """
+    :param corpus_dir:
+    :return: tfidf_matrix
+    """
+    tfidf_matrix = []
+    idf_scores = idf_calculation(corpus_dir)   # Récupérer le score IDF
+    for filename in os.listdir(corpus_dir):
+        with open(f"{corpus_dir}\\{filename}", 'r') as f:
+            tf_scores = tf_calculation(f)   # Récupérer le score TF du document
+            tfidf_scores = {}
+            for word in tf_scores:
+                tf = tf_scores[word]   # Récupérer le score TF du mot dans le document
+                idf = idf_scores[word]   # Récupérer le score IDF du mot
+                tfidf_scores[word] = tf * idf   # Calculer le score TF-IDF
+            tfidf_matrix.append(tfidf_scores)   # Remplir le tableau avec le dictionnaire de scores TF-IDF du document
+    return tfidf_matrix
+
+"""----------CORPS DU PROGRAMME PRINCIPAL----------"""
+
+# Obtenir la matrice TF-IDF
+tfidf_matrix_result = tfidf_matrix("cleaned")
 
 def tf(file_path=None, chaine=None):
     ''' chemin d'accès, str → dict
@@ -75,7 +139,7 @@ def tfidf(directory):
     tfidf_matrix = []
     for file_name in files:
         file_path = os.path.join(cleaned_directory, file_name)
-        tf_scores = tf(file_path)
+        tf_scores = tf_calculation(file_path)
         tfidf_dict = {term: tf * idf_scores[term] for term, tf in tf_scores.items()}
         tfidf_matrix.append(tfidf_dict)
     return tfidf_matrix
@@ -124,18 +188,19 @@ def score_tfidf_max(matrice):
 def mots_non_importants():
     '''Entrée : None → Sortie : None
     Affiche les mots qui ont un idf nul, càd qui ont un score tfidf nul dans tous les docs'''
+
     mots_doc = set()
-    for value in files_names:
+    for value in files_names: # ajoute tous les mots du corpus
         with open(f"cleaned/{value}", "r", encoding='utf-8', errors='ignore') as f:
             mot = f.read().split()
             for mots in mot: mots_doc.add(mots)
+
     print('\n')
     nb_char = 0
     for mot in mots_doc:
-        if idf(files_names)[mot] == 0:
+        if idf(files_names)[mot] == 0: # n'affiche que ceux qui ont un idf nul
             if nb_char == 0 :
-                print('                     ',end='')
-            print('«', mot, '»', end=', ')
+                print('«', mot, '»', end=', ')
             time.sleep(0.1)
             nb_char += len(
                 mot) + 6  # +6 en comptant les 2 guillemts, la virgule, les 2 esapaces entre les guillemets et le mot et l'espace après la virgule
@@ -163,8 +228,6 @@ def pres_nation():
             for j in president_dict:
                 prénom = president_dict[nom]
                 pres.append(prénom + ' ' + nom)
-
-
     return list(set(pres))
 
 
@@ -173,13 +236,13 @@ def pres_nation_max():
 
     d = {}
     pres = pres_nation()
-    for file in files_list :
+    for file in files_list:
         d1 = tf(f'cleaned/{file}')
         if 'nation' in d1:
             d[file] = d1['nation']
     max = 0
     for i in d:
-        if d[i] > max: max = d[i] # on relève la plus grande clé du dictionnaire
+        if d[i] > max: max = d[i] # on relève la plus grande clé de la liste
     for i in d:
         if d[i] == max: # on relève le nom du président qui correspond à la valeur max trouvée
             if '1' in i or '2' in i:
@@ -188,11 +251,16 @@ def pres_nation_max():
                 return i.split('.')[0].split('_')[1]
 
 
+ordre = ['Nomination_Giscard dEstaing.txt', 'Nomination_Mitterrand1.txt', 'Nomination_Mitterrand2.txt',
+         'Nomination_Chirac1.txt', 'Nomination_Chirac2.txt', 'Nomination_Sarkozy.txt', 'Nomination_Hollande.txt',
+         'Nomination_Macron.txt']
+
+
 def pres_climat():
     ''' Entrée : None → Sortie : list
-    Affiche le nom des présidents qui ont parlé du climat'''
+    Retorune le nom du premier président qui a parlé du climat'''
     L = []
-    for file in files_names:
+    for file in ordre:
         with open(f"cleaned/{file}", "r", encoding='utf-8', errors='ignore') as f:
             mots_doc = f.read().split()
             for mot in mots_doc :
@@ -209,24 +277,21 @@ def pres_climat():
         else : print(i,end=', ')
         time.sleep(0.1)
 
-
 def affichage_chaine(chaine):
     '''Entrée: str → Sortie: None
     Affiche la chaine avec un temps d'attente entre chaque mot'''
     chaine = chaine.split()
     nb_char = 0
     for i in chaine:
-        if nb_char == 0 :
-            print('                     ', end='')
         print(i, end=' ')
         nb_char += len(i) + 1
-        if nb_char >= 90: nb_char = 0; print() # si le nombre de caractères sur une ligne dépasse 90, on revient à la ligne
+        if nb_char >= 90: nb_char = 0; print() # si le nombre de caractère sur une ligne dépasse 9à, on reviens à la ligne
         time.sleep(0.1)
 
 
 def mots_communs():
     '''Entrée: None → Sortie: None
-    Affiche les mots cités par tous les présidents'''
+    Affiche les mots cité par tous les présidents'''
 
     mandat_unique = [i for i in files_names if '1' not in i and '2' not in i]
     chirac = [i for i in files_names if 'Chirac' in i]
@@ -241,123 +306,123 @@ def mots_communs():
     mots_communs2 = list(set([i for i in mots2 if idf(files_names)[i] != 0])) # on ajoute que les mots importants
     mots_communs3 = list(set([i for i in mots3 if idf(files_names)[i] != 0])) # on ajoute que les mots importants
 
-    print('\n')
     nb_char = 0
-    for i in mots_communs1:
-        if i in mots_communs2 and i in mots_communs3:
-            if nb_char == 0:
-                print('                     ', end='')
+    print('\n')
+    for i in mots_communs1 :
+        if i in mots_communs2 and i in mots_communs3 : # on n'affiche que les mots présents dans les 3 documents
             print('«', i, '»', end=', ')
             nb_char += len(i) + 6
-            if nb_char >= 85: print();nb_char = 0
-            time.sleep(0.1)
+            if nb_char >= 90 : print();nb_char =0
+
+    '''L = ['sont', 'm', 'un', 'ont', 'leur', 'avec', 'mai', 'n', 'chacun', 's', 'cette', 'pas', 'lui', 'droits', 'politique', 'sont', 'avenir', 'confiance']
+    for value in files_names :
+        for i in L :
+            with open(f"cleaned/{value}", "r", encoding='utf-8') as f:
+                if i not in f.read():
+                    print(i, value)'''
 
 
-
-def tok(q):
-    a = ""
-    L = q.split()
-    for mots in L:
-        i = 0
-        for lettre in mots:
-            code_ascii = ord(lettre)
-            if 65 <= code_ascii <= 90:
-                code_ascii += 32
-                a += chr(code_ascii)
-            elif 0 <= code_ascii <= 47 or 58 <= code_ascii <= 64 or 91 <= code_ascii <= 96 or 123 <= code_ascii <= 127:
-                a += " "
-            else:
-                a += mots[i]
-            i += 1
-        if a[-1] != ' ': a += ' '
-    return a
-
-
-def corpus_et_question(q):
-    '''Entrée: str → Sortie: list
-    Affiche les mots présents dans q et dans le corpus'''
-    mots_quest = q.split()
-    L = []
-    for i in mots_quest:
-        for file in files_list:
-            if i in tf(f'cleaned/{file}'): L.append(i)
-    return list(set(L))
-
-
-def produit_scalaire(v1, v2):
-    '''Entrée: dictionnaire/list, dictionnaire/list → Sortie: int
-    Retourne le produit scalaire de v1 et v2'''
-    assert len(v1) == len(v2)
-    p_scalaire = 0
-    for i in range(len(v1)):  p_scalaire += v1[i] * v2[i]
-    return p_scalaire
-
-
-def norme_vecteur(v1):
-    '''Entrée : dictionnaire/list →Sortie : float'
-    Retourne la norme de v1'''
-    for i in range(len(v1)): # on remplace les valurs de v1 par leur carré
-        v1[i] = v1[i] ** 2
-    somme = 0
-    for i in v1: somme += i # on calcule la somme des carrés
-    return math.sqrt(somme)
-
-def similarité(v1, v2):
-    '''Entrée: dictionnaire/list,dictionnaire/list → Sortie: float'''
-    return produit_scalaire(v1, v2) / (norme_vecteur(v1) * norme_vecteur(v2))
-
-def génération(mot):
-    '''Entrée: str -> Sortie: str
-    Génere la réponse à la question'''
-    #mot = score_tfidf_max(tf_idf_question)
-    #d_pertient = doc_pertinent
-
-    with open(os.path.join("speeches", 'Nomination_Macron.txt'), "r", encoding='utf-8') as f:
-        phrases = f.read().split('.') # on sépare le doc par phrase
-    for i in phrases : # on n'affiche que la première phrase
-        if mot in i :
-            return affichage_chaine(i)
-
-
-def affiner(q):
-    '''Entrée: str -> Sortie: list
-    Améliore la qualité de la réponse'''
-    question_starters = {
-        "Comment": "Après analyse, ",
-        "Pourquoi": "Il semblerait que, ",
-        "Peux-tu": "Oui, bien sûr !",
-        "Explique-moi": "Très bien, "}
-    question = q.split()
-    for i in question_starters :
-        if question[0] == i :
-            return question_starters[i]
-
-
-def mots_question (q):
-    letter_list=list(q)
-    letter_list_cleaned=[]
-    last_element = ""
-    for element in letter_list:
-        #on convertit chq lettre majuscule en minuscule
-        if 65<=ord(element)<=90:
-            letter_list_cleaned.append(chr(ord(element)+32))
-            last_element=chr(ord(element)+32)
-        #on réecrit chq minuscule dans la liste clean
-        elif 97<=ord(element)<=122:
-            letter_list_cleaned.append(element)
-            last_element = element
-        #on convertit chq caractère spécial en espace
-        else:
-            #on vérifie qu'il n'y ai pas deux espaces à la suite
-            if last_element!=" ":
+# convertir la question en liste de mots
+def tokenize_question(question):
+    letter_list_cleaned = []
+    letter_list = list(question)
+    for character in letter_list:
+        if 97 <= ord(character) <= 122:
+            letter_list_cleaned.append(character)
+            last_character = character
+        elif 65 <= ord(character) <= 90:
+            letter_list_cleaned.append(chr(ord(character) + 32))
+            last_character = chr(ord(character) + 32)
+        elif 0 <= ord(character) <= 64 or 91 <= ord(character) <= 96 or 123 <= ord(character) <= 127:
+            if last_character != " ":
                 letter_list_cleaned.append(" ")
-                last_element = " "
-   #on chaque élément de la liste
-    j= "".join(letter_list_cleaned)
-   #on sépare la chaine de caractère à partir des espaces
-    j = j.split(" ")
+                last_character = " "
+        else:
+            letter_list_cleaned.append(character)
+            last_character = character
+    while letter_list_cleaned and letter_list_cleaned[-1] == " ":
+        del letter_list_cleaned[-1]
+    question = "".join(letter_list_cleaned)
+    word_list = question.split(" ")
+    return word_list
 
 
-    L=q.split(" ")
-    return j
+# trouver les mots qui sont dans la question et dans le corpus
+def intersection_terms(question_words, corpus_directory):
+    question_set = set(question_words)
+    corpus = read_documents(corpus_directory)
+    corpus_words = []
+    for document in corpus:
+        for word in document.split():
+            corpus_words.append(word)
+    corpus_set = set(corpus_words)
+    common_terms = question_set & corpus_set
+    return list(common_terms)
 
+
+# calculer le score tfidf de la question
+def tfidf_vector(words, idf_scores):
+    tf_vector = {}
+    question_words = set(words)
+    for word in question_words:
+        tf = words.count(word) / len(words)
+        if word in idf_scores:
+            tf_vector[word] = tf * idf_scores[word]
+        else:
+            tf_vector[word] = 0
+        if word == "comment":
+            tf_vector[word] = 0
+    return tf_vector
+
+
+# calculer les normes des vecteurs
+def norm(vector):
+    squared_sum = 0
+    for value in vector.values():
+        squared_sum += value ** 2
+    return math.sqrt(squared_sum)
+
+
+# calculer la similarité
+def cosine_similarity(vector_a, vector_b):
+    common_words = set(vector_a.keys()) & set(vector_b.keys())
+    if not common_words:
+        return 0
+    dot_prod = 0
+    for word in common_words:
+        dot_prod += vector_a[word] * vector_b[word]
+    norm_a = norm(vector_a)
+    norm_b = norm(vector_b)
+    if norm_a == 0 or norm_b == 0:
+        return 0
+    return dot_prod / (norm_a * norm_b)
+
+
+# claculer le document le plus pertinent
+def most_relevant_document(question_vector, tfidf_matrix, file_names):
+    similarities = {}
+    for i, document_vector in enumerate(tfidf_matrix):
+        similarity = cosine_similarity(question_vector, document_vector)
+        similarities[file_names[i]] = similarity
+    return max(similarities, key=similarities.get)
+
+
+# générer une réponse
+def generate_response(most_relevant_doc, highest_tfidf_word):
+    with open(f"cleaned\\{most_relevant_doc}", 'r') as f:
+        document_content = f.read()
+        sentences = document_content.split('.')
+        for sentence in sentences:
+            if highest_tfidf_word in sentence:
+                return sentence
+    return None
+
+
+# faire une liste du contenu des fichier textes
+def read_documents(directory):
+    corpus = []
+    for filename in os.listdir(directory):
+        with open(f"cleaned\\{filename}", 'r') as f:
+            document = f.read()
+            corpus.append(document)
+    return corpus
