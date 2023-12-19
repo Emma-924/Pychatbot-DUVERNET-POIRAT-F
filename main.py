@@ -1,7 +1,5 @@
 from fonctions import *
 import time
-import os
-import math
 
 directory = "speeches"
 files_names = list_of_files(directory, "txt")
@@ -53,23 +51,25 @@ for value in files_names:
                     last_element_written = character
 
 
-print('\n------------------------------------------ Bienvenue ------------------------------------------ ')
+print('\n\033[1;95;49m                    ------------------------------------------- Bienvenue ------------------------------------------- ')
 choix = ''
-print('1- Connaitre la liste des mots les moins importants')
+print('\n\033[0;38;49m                     1- Connaitre la liste des mots les moins importants')
 time.sleep(0.4)
-print('2- Connaitre le mot avec le score tf-idf le plus élevé')
+print('                     2- Connaitre le mot avec le score tf-idf le plus élevé')
 time.sleep(0.4)
-print('3- Connaitre le mot le plus répété par le président Chirac')
+print('                     3- Connaitre le mot le plus répété par le président Chirac')
 time.sleep(0.4)
-print('4- Connaitre la liste des présidents qui ont parlé de la nation et savoir qui en a le plus parlé')
+print('                     4- Connaitre la liste des présidents qui ont parlé de la nation et celui qui en a le plus parlé')
 time.sleep(0.4)
-print('5- Connaitre le nom du premier président à avoir palé du climat')
+print('                     5- Connaitre le nom du premier président à avoir palé du climat')
 time.sleep(0.4)
-print('6- Connaitre la liste des mots cités par tous les présidents')
+print('                     6- Connaitre la liste des mots cités par tous les présidents')
 time.sleep(0.4)
 print('')
-print(" --------- Pour accéder au menu des questions,veuillez saisir un numéro d'une question --------- "
-      "\n------------------- Pour accéder au Chatbot, veuillez saisir 7 -------------------")
+question = input("\033[0;95;49m                    ---------- Pour accéder au menu des questions,veuillez saisir le numéro d'une question ---------- "
+                 "\n                    -------------------- Pour accéder au Chatbot, veuillez saisir 7 --------------------\n                     \33[0m")
+
+
 
 number = int(input("Tapez : "))
 question = number
@@ -104,7 +104,8 @@ if 1 <= number <= 6:
         elif question == '6' :
             affichage_chaine('Les mots cités par tous les présidents et qui ne sont pas considérés comme non importants sont')
             mots_communs()
-        choix = input("\n----------------------------- Tapez « STOP » pour quitter le menu -----------------------------\n------------------------- Pour poser une question tapez son numéro -------------------------\n")
+        choix = input(
+            "\033[0;37;49m\n                    ------------------------------- Tapez « STOP » pour quitter le menu -------------------------------\033[0;37;49m\n                    ------------------------- Pour continuer saisissez une autre question -------------------------\n                    \33[0m")        
         if choix == 'STOP':
             break
         question = choix
