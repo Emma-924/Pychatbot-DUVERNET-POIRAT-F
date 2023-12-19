@@ -31,3 +31,6 @@ Questions traitées
 •	Liste les mots mentionnés par tous les présidents, à l'exception des mots non importants.
 7.	Interaction avec le Chatbot :
 •	Permet à l'utilisateur d'interagir avec le chatbot en posant des questions.
+
+
+![image](https://github.com/Emma-924/Pychatbot-DUVERNET-POIRAT-F/assets/151037998/534681f8-8a89-442d-816f-c3cf064971bb)
