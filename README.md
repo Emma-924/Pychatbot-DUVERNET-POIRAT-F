@@ -1,5 +1,4 @@
 Aperçu
-
 Ce projet analyse les discours présidentiels pour extraire des informations et répondre à des questions spécifiques liées au contenu des discours. Le code est écrit en Python et utilise diverses fonctions pour le traitement et l'analyse de texte.
 Table des matières
 •	Configuration
@@ -32,6 +31,5 @@ Questions traitées
 •	Liste les mots mentionnés par tous les présidents, à l'exception des mots non importants.
 7.	Interaction avec le Chatbot :
 •	Permet à l'utilisateur d'interagir avec le chatbot en posant des questions.
+![image](https://github.com/Emma-924/Pychatbot-DUVERNET-POIRAT-F/assets/151037998/0393f530-ff48-461e-b735-bf21c1f976f7)
 
-
-![image](https://github.com/Emma-924/Pychatbot-DUVERNET-POIRAT-F/assets/151037998/534681f8-8a89-442d-816f-c3cf064971bb)
