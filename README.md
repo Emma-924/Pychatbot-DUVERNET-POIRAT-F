@@ -1,4 +1,5 @@
 Aperçu
+
 Ce projet analyse les discours présidentiels pour extraire des informations et répondre à des questions spécifiques liées au contenu des discours. Le code est écrit en Python et utilise diverses fonctions pour le traitement et l'analyse de texte.
 Table des matières
 •	Configuration
